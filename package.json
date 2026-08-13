@@ -1,0 +1,10 @@
+{
+  "name": "golden-care-tracking",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Golden Care Tracking - ALF compliance manager, backed by Airtable via Netlify Functions.",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {}
+}
