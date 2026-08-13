@@ -40,16 +40,21 @@ All real resident/staff names, dates, diagnoses, ADL plans, behavioral notes,
 vaccine records, and the full historical compliance-task completion log from
 the live app were copied in — nothing was dropped.
 
-Note: the static task catalog, resident roster, and staff roster are still
-also hardcoded in `index.html` (as `TASKS`, `SERVICE_PLAN_RESIDENTS`, `PEOPLE`,
-etc.) exactly as they were in the live app — those were **not** wired to fetch
-from Airtable at render time, to keep this migration minimal/low-risk. The
-`Residents` / `Staff` / `TaskCatalog` Airtable tables currently serve as a
-durable backup/source-of-record and a foundation for fully wiring up
-editing of that data later, if wanted. The parts of the app that people
-actually click/edit day-to-day — the monthly checklist, vaccine tracking
-table, calendar checkboxes, and form checkbox state — are the ones now live
-in Airtable and shared across browsers/computers.
+**Update:** the task catalog, resident roster, and staff roster (formerly the
+hardcoded `TASKS`, `SERVICE_PLAN_RESIDENTS`, `PEOPLE`/`STAFF` arrays in
+`index.html`) are now also read live from Airtable, the same way the monthly
+checklist / vaccine tracking / calendar checkboxes already were. Edit a
+resident's service-plan detail, a staff member's info, or a task's
+schedule/category directly in the `Residents`, `Staff`, or `TaskCatalog`
+table in Airtable, and it shows up on the site the next time it loads —
+no code change needed. This is **read-only** (Airtable → site, one direction):
+the Service Plan tab's resident fields are print-only `contenteditable` spans
+with no save button/handler wired up (they exist so you can tweak the text of
+a printed page in the browser right before printing), so there's no in-app
+"save" action for resident/staff/task data to wire up on the other end. If a
+real edit/save UI for that data is added later, extend `residents.js` /
+`staff.js` / `task-catalog.js` with a POST/PATCH handler mirroring
+`monthly-tasks.js`.
 
 ## Files in this folder
 
@@ -65,6 +70,13 @@ in Airtable and shared across browsers/computers.
   `taskId_month_year -> checked`; POST upserts one checkbox.
 - `netlify/functions/form-state.js` — GET/POST the saved checkbox state for a
   single printable form.
+- `netlify/functions/residents.js` — GET returns the resident roster +
+  service-plan detail (read-only; edit residents directly in Airtable). Parses
+  `DiagnosisJSON` / `ADLJSON` / `BehavioralJSON` back into arrays server-side.
+- `netlify/functions/staff.js` — GET returns the staff roster (read-only; edit
+  staff directly in Airtable).
+- `netlify/functions/task-catalog.js` — GET returns the 28-item compliance
+  task catalog (read-only; edit tasks directly in Airtable).
 - `netlify/functions/lib/airtable.js` — shared helper that talks to the
   Airtable REST API using `AIRTABLE_TOKEN` / `AIRTABLE_BASE_ID` from
   environment variables. **No token is hardcoded anywhere in this repo.**
@@ -126,10 +138,7 @@ effect).
    vaccine tracking table, and calendar tab all show the same data as
    https://goldencareclub.netlify.app/ currently shows, then switch DNS /
    replace the live Netlify Drop site.
-4. **Decide whether to fully wire Residents/Staff/TaskCatalog to Airtable
-   too** — right now those three tables exist in Airtable as a durable
-   backup/reference, but the app still reads them from the hardcoded JS
-   arrays (this was intentional, to keep the migration minimal and safe for
-   an actively-used app). If you want the resident roster, staff roster, and
-   task catalog to also be editable from Airtable and reflected live in the
-   app, that's a reasonable follow-up but was out of scope for this pass.
+4. **(Done in this pass)** Residents/Staff/TaskCatalog are now wired to
+   Airtable on the read side — see the "Update" note above. No new env vars
+   were needed; the same `AIRTABLE_TOKEN` / `AIRTABLE_BASE_ID` cover the new
+   endpoints too.

@@ -723,36 +723,12 @@ const FACILITY = { name: 'Golden Care Club', address: '— Address —', phone: 
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-const TASKS = [
-  { id: 'assessments-45d', name: '45-Day Assessments', months: [1,2,3,4,5,6,7,8,9,10,11,12], cat: 'recurring', formId: null },
-  { id: 'staff-emr-weight', name: 'Staff EMR / Ext Weight', months: [1,2,3,4,5,6,7,8,9,10,11,12], cat: 'recurring', formId: null },
-  { id: 'covid-tb-check', name: 'Staff Monthly COVID/TB Check', months: [1,2,3,4,5,6,7,8,9,10,11,12], cat: 'recurring', formId: 'covid-tb-staff' },
-  { id: 'fire-drill-q', name: 'Quarterly Fire Drill', months: [1,4,7,10], cat: 'quarterly', formId: 'fire-drill' },
-  { id: 'controlled-meds', name: 'CDS (Controlled Dangerous Substances) Cert', months: [7,8], cat: 'certification', note: 'Exp 8/31/2028', formId: null },
-  { id: 'emergency-drill', name: 'Emergency/Disaster Drill', months: [3,9], cat: 'semi-annual', formId: 'emergency-drill' },
-  { id: 'qa-review', name: 'QA Review', months: [3,9], cat: 'semi-annual', formId: 'qa-review' },
-  { id: 'service-plans', name: 'Service Plans', months: [3,9], cat: 'semi-annual', formId: null },
-  { id: 'rat-review', name: 'RAT Review', months: [3,9], cat: 'semi-annual', note: 'DN + ALM signatures required', formId: 'rat-review' },
-  { id: 'bi-annual-ayo', name: 'Bi-Annual Training 20 hrs — Ayo Fashina', months: [3], cat: 'certification', note: 'Due 2027', formId: 'training-attendance' },
-  { id: 'bi-annual-leticia', name: 'Bi-Annual Training 20 hrs — Leticia Nwosu', months: [3], cat: 'certification', note: 'Due 2027', formId: 'training-attendance' },
-  { id: 'good-standing', name: 'Good Standing Check', months: [5], cat: 'annual', formId: null },
-  { id: 'bi-board-alf', name: 'BI-Board ALF Cert', months: [6], cat: 'certification', note: 'Exp 7/1/27', formId: null },
-  { id: 'cmt-leticia', name: 'CMT Check – Leticia', months: [7,8], cat: 'certification', note: '⚠️ EXPIRES 8/28/26 — Renew NOW', formId: null },
-  { id: 'annual-training', name: 'Annual Training (8 hrs)', months: [8], cat: 'annual', note: 'See training list', formId: 'training-attendance' },
-  { id: 'tb-screening', name: 'TB Screening Forms', months: [8], cat: 'annual', formId: 'tb-screening' },
-  { id: 'covid-flu-decl', name: 'COVID/TB/Flu Declination Forms', months: [8], cat: 'annual', formId: 'vaccine-decl' },
-  { id: 'cpr-renewal-ayo', name: 'CPR & First Aid Renewal — Ayo Fashina', months: [8], cat: 'certification', note: 'Due: August 2027', formId: null },
-  { id: 'cpr-renewal-leticia', name: 'CPR & First Aid Renewal — Leticia Nwosu', months: [8], cat: 'certification', note: 'Due: August 2027', formId: null },
-  { id: 'performance-review', name: 'Performance Review', months: [8], cat: 'annual', formId: 'perf-review' },
-  { id: 'update-tracking', name: 'Update Tracking Sheet', months: [8], cat: 'annual', formId: null },
-  { id: 'pharm-review', name: 'Pharm Review', months: [9], cat: 'annual', formId: null },
-  { id: 'tb-cdc-risk', name: 'TB CDC Risk Assessment', months: [9], cat: 'annual', formId: 'tb-screening' },
-  { id: 'fire-marshal', name: 'Fire Marshal Inspection', months: [9], cat: 'annual', formId: null },
-  { id: 'staff-schedule', name: 'Staff Schedule Update', months: [9], cat: 'annual', formId: null },
-  { id: 'menu-po', name: 'Menu/PO Review (3-year cycle)', months: [9], cat: 'annual', formId: null },
-  { id: 'fire-extinguisher', name: 'Fire Extinguisher Inspection', months: [11], cat: 'annual', formId: null },
-  { id: 'cmt-ayo', name: 'CMT – Ayo Fashina', months: [12], cat: 'certification', note: 'Exp 1/28/2027', formId: null },
-];
+// TASKS (the 28-item compliance task catalog) is no longer hardcoded — it's
+// fetched live from the Airtable "TaskCatalog" table via /api/task-catalog
+// in loadInitialData() at the bottom of this script, so edits made directly
+// in Airtable show up on the site without a code change. `let` (not `const`)
+// because it's populated asynchronously at startup.
+let TASKS = [];
 
 const COMAR_REMINDERS = [
   'HHS Exclusion Database must be checked before any new staff hire',
@@ -943,16 +919,22 @@ function updateNotes(key, taskId, val) {
 }
 
 // ─── FORMS GRID ──────────────────────────────────────────────────────────────
-const PEOPLE = [
-  { id: 'watson-richard',   name: 'Watson, Richard',   role: 'Resident',             type: 'resident', dob: '' },
-  { id: 'coe-james',        name: 'Coe, James',        role: 'Resident',             type: 'resident', dob: '' },
-  { id: 'riley-martha',     name: 'Riley, Martha',     role: 'Resident',             type: 'resident', dob: '' },
-  { id: 'mcrennon-james',   name: 'McRennon, James',   role: 'Resident',             type: 'resident', dob: '' },
-  { id: 'sproat-timothy',   name: 'Sproat, Timothy',   role: 'Resident',             type: 'resident', dob: '' },
-  { id: 'fashina-ayo',      name: 'Fashina, Ayobami',  role: 'Administrator / ALM',  type: 'staff',    dob: '01/16/1989', fullName: 'Ayobami O. Fashina' },
-  { id: 'leticia',          name: 'Nwosu, Leticia',    role: 'CMT',                  type: 'staff',    dob: '08/12/1970', fullName: 'Letecia Nwosu' },
-];
-const STAFF = PEOPLE.filter(p => p.type === 'staff');
+// PEOPLE / STAFF are also no longer hardcoded — fetched live from Airtable
+// (Residents + Staff tables) in loadInitialData(). Residents keep their
+// original "lastname-firstname" PEOPLE ids (fixed mapping below, since some
+// print-form logic elsewhere keys off exact id strings); staff ids come
+// straight from the Airtable StaffKey field (e.g. 'leticia', 'fashina-ayo'),
+// which some form-signature logic below also compares against literally —
+// keep those StaffKey values unchanged in Airtable if you rename staff.
+const RESIDENT_KEY_TO_PEOPLE_ID = {
+  watson: 'watson-richard',
+  coe: 'coe-james',
+  riley: 'riley-martha',
+  mccrennon: 'mcrennon-james',
+  sproat: 'sproat-timothy',
+};
+let PEOPLE = [];
+let STAFF = [];
 
 const FORM_CARDS = [
   { id: 'tb-screening-forms',  icon: '🩺', title: 'TB Symptom Screening Forms',   desc: 'Individual TB screening form for Ayo & Leticia — pre-filled with name, DOB, and role', special: 'tb' },
@@ -1756,276 +1738,13 @@ function switchTab(name, btn) {
 // ─── INIT ────────────────────────────────────────────────────────────────────
 
 // ─── SERVICE PLANS ─────────────────────────────────────────────────────────────
-const SERVICE_PLAN_RESIDENTS = [
-  {
-    id: 'watson',
-    name: 'Richard Watson',
-    dob: '8/12/1960',
-    spDate: '9/1/2025',
-    codeStatus: 'OLST',
-    admissionDate: '12/30/2017',
-    seizurePrecautions: 'Yes',
-    fallPrecautions: 'Yes',
-    medsBy: 'Staff',
-    levelOfCare: '2',
-    dnr: 'No', olst: 'Yes', advDirective: 'No', dni: '',
-    highRiskMeds: 'PARTICIPANT HIGH BLOOD PRESSURE',
-    highRiskPrecautions: '',
-    allergies: 'NKDA',
-    assistiveDevices: 'Walker',
-    mobilityAssistance: 'Resident\'s Walker',
-    sensoryImpairments: 'No hearing issues; no vision issues',
-    specialInstructions: 'Resident is a smoker — educated not to smoke indoors; knows designated outdoor area. Has speech impediment but can verbalize needs.',
-    diagnosis: [
-      { dx: 'Muscle Weakness', plan: 'Encourage exercise walking down driveway, balcony; note any shortness of breath and report to RN.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Difficulty Walking', plan: 'Monitor the use of walker and progress. Note any recommendations from PT and OT.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Cognitive Communication Deficit', plan: 'Encourage practicing communication skill. Help resident reflect and talk about happy memories.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Type 2 Diabetes', plan: 'Monitor diet. Check glucose and document levels 2x daily. Give medication as ordered.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Kidney Dialysis', plan: 'Resident will attend dialysis 3x weekly.', freq: 'Weekly', by: 'Other' },
-      { dx: 'HTN – Hypertension', plan: 'Staff will administer orders as ordered.', freq: 'Daily', by: 'Facility Staff' },
-    ],
-    adl: [
-      { activity: 'Ambulation', help: 'Walker / Wheelchair — Supervision Required', by: 'Facility Staff', when: 'As Needed', comments: 'Needs supervision using stair lift and ambulatory equipment' },
-      { activity: 'Bathing', help: 'Provide Assistance', by: 'Facility Staff', when: 'As Needed', comments: 'Needs assistance with washing leg areas and back when showering' },
-      { activity: 'Dressing', help: 'Assist with shoes; Independent otherwise', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Toileting', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: 'Bedside commode use at night' },
-      { activity: 'Eating', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Mobility', help: 'Provide supervision', by: 'Facility Staff', when: 'Every day', comments: 'Staff will help support resident while walking' },
-      { activity: 'Oral Care', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Grooming', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Medication', help: 'Independent', by: 'Medication Technician', when: 'Every day', comments: 'Administered by all CMTs' },
-    ],
-    behavioral: [
-      { activity: 'Vision/Hearing Impairment', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Depression/Withdrawn Behaviors', occurrence: 'Never', comments: '', when: 'Weekly', by: 'Facility Staff' },
-      { activity: 'Anxiety', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Impaired Recall', occurrence: 'Never', comments: '', when: 'Daily', by: 'Facility Staff' },
-      { activity: 'Disturbed Sleep Pattern', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Resists Care/Assistance', occurrence: 'Occasional', comments: 'Resident refuses showers. Staff will encourage and help consumer bathe at least 3x weekly.', when: 'Weekly', by: 'Facility Staff' },
-    ],
-    background: 'Resident was a PE teacher. Loves sports and ESPN. Wakes early AM, eats while watching TV, participates in games with other residents.',
-    likes: 'Loves sport.',
-    spiritual: 'Protestant',
-    routine: 'Wake up early AM, loves to eat while watching TV. Watches sports and ESPN news. Participates in games activities with other residents and eats 3x a day.',
-    finances: 'Family, resident, or representative manages all financial matters independently.',
-    transportation: 'Needs some assistance/escort',
-    completedDate: '9/1/2025',
-  },
-  {
-    id: 'sproat',
-    name: 'Timothy Sproat',
-    dob: '5/22/1947',
-    spDate: '9/1/2025',
-    codeStatus: 'OLST',
-    admissionDate: '9/20/2019',
-    seizurePrecautions: 'Yes',
-    fallPrecautions: 'Yes',
-    medsBy: 'Staff',
-    levelOfCare: '3',
-    dnr: 'No', olst: 'Yes', advDirective: 'No', dni: '',
-    highRiskMeds: 'EDMA HIGH-BLOOD-PRESSURE',
-    highRiskPrecautions: 'Symptoms include weakness',
-    allergies: 'NKFA, NKDA',
-    assistiveDevices: 'Eye Glasses, Wheel Chair',
-    mobilityAssistance: '1 Person Assists',
-    sensoryImpairments: 'No hearing issues; no vision issues',
-    specialInstructions: 'Resident is only allowed to order food outside of the facility once a week (Saturday).',
-    diagnosis: [
-      { dx: 'Diabetes Type 2', plan: 'Give medications as ordered, monitor for c/o headache, dizziness, slurred speech, keep all appts. Check blood sugar M, W, and Friday daily and document in residents file.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Major Depressant Disorder', plan: 'Give medications as ordered for anxiety. Test memory at least once daily to assist with cognitive behavior.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'HTN', plan: 'Monitor blood pressure per doctor\'s orders, give medications, document any complaints and signs of headache, blurred vision, dizziness or nausea. Encourage exercise (walking down driveway and back). Maintain heart healthy diet.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Lymphedema (lower extremities)', plan: 'Give medications as ordered, monitor voiding, keep all appts. M,W,F staff will apply petroleum jelly on foot. (Wound care taught by RN and documented in progress notes)', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Benign Prostatic Hyperplasia', plan: 'Staff will empty catheter as needed. Report any observed changes. Will be changed by RN monthly.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'COPD', plan: 'Monitor diet, give medications as ordered, keep all appts.', freq: 'Daily', by: 'Facility Staff' },
-    ],
-    adl: [
-      { activity: 'Ambulation', help: 'Provide Assistance — Walker / Wheelchair', by: 'Facility Staff', when: 'As Needed', comments: 'Staff will assist with resident ambulation as required with PT and OT' },
-      { activity: 'Bathing', help: 'Bed Bath (M,W,F)', by: 'Facility Staff', when: 'Every Week', comments: 'Staff give bed bath M,W,F weekly' },
-      { activity: 'Dressing', help: 'Total Assist', by: 'Facility Staff', when: 'Every day', comments: 'Staff will help resident dress daily' },
-      { activity: 'Toileting', help: 'Adult briefs / Catheter care', by: 'Facility Staff', when: 'Every day', comments: 'Staff will assist resident with toileting daily' },
-      { activity: 'Eating', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Mobility', help: 'Total Assistance', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Oral Care', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Grooming', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Transferring', help: 'Total Assist', by: 'Facility Staff', when: 'As Needed', comments: 'Resident will help staff as instructed by PT and OT daily' },
-      { activity: 'Medication', help: 'Total Assist', by: 'Medication Technician', when: 'Every day', comments: 'CMT will administer meds daily as prescribed' },
-      { activity: 'Making Phone Calls', help: 'Independent', by: '', when: 'Every day', comments: '' },
-      { activity: 'Managing Money', help: 'With assistance (only petty cash)', by: 'Other', when: 'As Needed', comments: 'Sister will help resident manage funds' },
-    ],
-    behavioral: [
-      { activity: 'Vision/Hearing Impairment', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Depression/Withdrawn Behaviors', occurrence: 'Occasional', comments: 'Staff will encourage resident and remind resident of family members who support him.', when: 'Daily', by: 'Facility Staff' },
-      { activity: 'Anxiety', occurrence: 'Regular', comments: 'Resident repeatedly asks questions. Currently scared of moving although can move. Staff will support resident through OT/PT. CMT will administer PRN medication for anxiety as ordered.', when: 'Daily', by: 'Facility Staff' },
-      { activity: 'Impaired Recall', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Disturbed Sleep Pattern', occurrence: 'Occasional', comments: 'Resident may be up watching TV all night. CMT will administer medication for sleep as ordered.', when: 'Daily', by: 'Facility Staff' },
-      { activity: 'Agitation', occurrence: 'Occasional', comments: 'Does not like disruption in TV services. Staff will assist resident with TV where needed.', when: 'Daily', by: 'Facility Staff' },
-    ],
-    background: 'Resident is friendly sometimes but does not like meeting new people. Gets along with sister great. Has issues with being insecure about moving around although he can.',
-    likes: 'Country TV, reading books, talking to sister. Dislikes talking to other residents, interference with TCM episodes.',
-    spiritual: 'N/A',
-    routine: 'Watches favorite episodes on TCM channel. Normal AM and PM routine without walking around.',
-    finances: 'Family/representative manages all financial matters independently.',
-    transportation: 'Needs some assistance/escort',
-    completedDate: '9/1/2025',
-  },
-  {
-    id: 'mccrennon',
-    name: 'James McRennon',
-    dob: '6/26/1931',
-    spDate: '9/1/2025',
-    codeStatus: 'OLST',
-    admissionDate: '4/1/2022',
-    seizurePrecautions: 'Yes',
-    fallPrecautions: 'Yes',
-    medsBy: 'Staff',
-    levelOfCare: '2',
-    dnr: 'Yes', olst: 'Yes', advDirective: 'No', dni: '',
-    highRiskMeds: '',
-    highRiskPrecautions: '',
-    allergies: 'NKDA',
-    assistiveDevices: 'Walker',
-    mobilityAssistance: '1 Person Assists',
-    sensoryImpairments: 'No hearing issues; no vision issues',
-    specialInstructions: 'Resident is DNR.',
-    diagnosis: [
-      { dx: 'Congestive Heart Failure', plan: 'Administer medication as ordered and follow all PCP orders. Staff will report any changes to PCP. Monitor blood pressure daily.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Hyperlipidemia', plan: 'Administer medication as ordered and follow all PCP orders. Report any changes to PCP. Monitor blood pressure daily.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'HTN – Hypertension', plan: 'Administer medication as ordered and follow all PCP orders. Report any changes to PCP. Monitor blood pressure daily.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Kidney Disease', plan: 'Administer orders as ordered.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Anemia', plan: 'Administer orders as ordered.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Weakness', plan: 'Monitor the use of walker and progress and assist when needed.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Dementia', plan: 'Monitor behaviors and administer meds as needed.', freq: 'Daily', by: 'Facility Staff' },
-    ],
-    adl: [
-      { activity: 'Ambulation', help: 'Provide Assistance', by: 'Facility Staff', when: 'As Needed', comments: 'Staff will assist with use of walker as needed' },
-      { activity: 'Bathing', help: 'Supervised, Independent', by: 'Facility Staff', when: 'Every 4th day', comments: 'Staff will supervise bathing 3x a week' },
-      { activity: 'Dressing', help: 'Assist with shoes; Independent otherwise', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Toileting', help: 'Independent', by: '', when: 'As Needed', comments: '' },
-      { activity: 'Eating', help: 'Independent', by: '', when: 'Every day', comments: '' },
-      { activity: 'Mobility', help: 'Provide supervision', by: 'Facility Staff', when: 'As Needed', comments: 'Staff will assist with mobility as needed' },
-      { activity: 'Oral Care', help: 'Independent', by: '', when: 'Every day', comments: '' },
-      { activity: 'Grooming', help: 'Independent', by: '', when: 'Every day', comments: '' },
-      { activity: 'Transferring', help: 'With Supervision / With Assistance', by: 'Facility Staff', when: 'As Needed', comments: 'Staff will assist with bed to walker and walker to bed' },
-      { activity: 'Medication', help: 'Total Assist', by: 'Medication Technician', when: 'Every day', comments: 'CMT will administer meds' },
-    ],
-    behavioral: [
-      { activity: 'Vision/Hearing Impairment', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Depression/Withdrawn Behaviors', occurrence: 'Occasional', comments: 'Staff will communicate and assist with activities with the resident.', when: 'Weekly', by: 'Facility Staff' },
-      { activity: 'Anxiety', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Impaired Recall', occurrence: 'Occasional', comments: 'Staff will assist resident with reminders.', when: 'Daily', by: 'Facility Staff' },
-    ],
-    background: 'Resident wants to be left alone most of the day. Has issues accepting his medical issues but is happy receiving help.',
-    likes: 'Likes to be alone and read.',
-    spiritual: 'N/A',
-    routine: 'Resident reads, watches TV and communicates with staff and other residents.',
-    finances: 'Family/representative manages all financial matters independently.',
-    transportation: 'Needs some assistance/escort',
-    completedDate: '9/1/2025',
-  },
-  {
-    id: 'riley',
-    name: 'Martha Riley',
-    dob: '2/18/1942',
-    spDate: '11/15/2025',
-    codeStatus: '',
-    admissionDate: '11/13/2025',
-    seizurePrecautions: 'Yes',
-    fallPrecautions: 'Yes',
-    medsBy: 'Staff',
-    levelOfCare: '3',
-    dnr: 'No', olst: 'Yes', advDirective: 'No', dni: 'No',
-    highRiskMeds: 'INSULIN SLIDING SCALE',
-    highRiskPrecautions: 'GIVE AS ORDERED BY DOCTOR',
-    allergies: 'NKDA',
-    assistiveDevices: 'Eye Glasses, Walker, Wheel Chair',
-    mobilityAssistance: 'Independent, with assistive device',
-    sensoryImpairments: 'Poor hearing in left and right ear; Poor vision in left and right eye',
-    specialInstructions: '',
-    diagnosis: [
-      { dx: 'Type 2 Diabetes Mellitus', plan: 'Daily blood glucose monitoring before meals and at bedtime. Administration of insulin (Humalog and Lantus) per prescriber\'s orders. Monitoring for signs of hypoglycemia/hyperglycemia. Dietary management with "No Added Salt/No Concentrated Sweets" diet. Nursing staff to administer insulin injections and document blood sugar results. Care staff to monitor food intake. Notify physician if blood glucose consistently <70 mg/dL or >250 mg/dL.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Hypertension (HTN)', plan: 'Administration of antihypertensive medications (Carvedilol, Hydralazine, Nifedipine). Routine blood pressure monitoring. Fall risk precautions due to possible dizziness/orthostatic hypotension. Nursing staff to administer medications as ordered and record BP daily. Care staff to assist with safe ambulation. Notify physician if BP <100/60 or >160/100 mmHg.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Dementia', plan: 'Monitor behaviors and administer meds as ordered. Staff will assist with reminders and daily care.', freq: 'Daily', by: 'Facility Staff' },
-    ],
-    adl: [
-      { activity: 'Ambulation', help: 'Provide Assistance / Walker / Wheelchair', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Bathing', help: 'Provide Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Dressing', help: 'With Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Toileting', help: 'With Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services; change every 2 hours' },
-      { activity: 'Eating', help: 'Independent', by: '', when: 'Every day', comments: '' },
-      { activity: 'Mobility', help: 'Provide Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Oral Care', help: 'Provide Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Grooming', help: 'With Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Transferring', help: 'With Assistance', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Medication', help: 'Total Assist', by: 'Medication Technician', when: 'Every day', comments: 'Staff will provide services' },
-      { activity: 'Making Phone Calls', help: 'Independent', by: '', when: 'Every day', comments: '' },
-      { activity: 'Managing Money', help: 'Representative payee or power of attorney', by: 'Facility Staff', when: 'Every day', comments: 'Staff will provide services' },
-    ],
-    behavioral: [
-      { activity: 'Vision/Hearing Impairment', occurrence: 'Continuous', comments: 'Staff will assist resident by speaking clearly and directly, increasing volume to ensure understanding; write down communications as needed.', when: 'Daily', by: 'Facility Staff' },
-      { activity: 'Depression/Withdrawn Behaviors', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Anxiety', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Impaired Recall', occurrence: 'Occasional', comments: 'Staff will remind resident of needs and daily care to help recall certain events as needed.', when: 'Daily', by: 'Facility Staff' },
-    ],
-    background: 'Ambulates with gait/balance impairment; requires supervision for safety. Jehovah\'s Witness — requires respect for spiritual practices; may decline certain medical interventions (e.g., blood transfusions).',
-    likes: 'Attending virtual religious meetings via Zoom, quiet environments for prayer and spiritual study, structured routines, soft-texture meals. Dislikes loud environments, foods outside preferred diet, unfamiliar routine changes.',
-    spiritual: 'Jehovah\'s Witness',
-    routine: 'Morning: Blood glucose monitoring, insulin, breakfast (therapeutic diet), personal care. Midday: Lunch, Humalog dose, light activity, rest. Evening: Dinner, Humalog dose, Zoom religious meetings, bedtime medications.',
-    finances: 'Representative payee manages finances.',
-    transportation: 'Needs some assistance/escort',
-    completedDate: '11/15/2025',
-  },
-  {
-    id: 'coe',
-    name: 'James Coe',
-    dob: '1/4/1948',
-    spDate: '3/10/2026',
-    codeStatus: '',
-    admissionDate: '3/9/2026',
-    seizurePrecautions: 'Yes',
-    fallPrecautions: 'Yes',
-    medsBy: 'Staff',
-    levelOfCare: '2',
-    dnr: 'No', olst: 'Yes', advDirective: 'No', dni: 'No',
-    highRiskMeds: '',
-    highRiskPrecautions: '',
-    allergies: 'NKDA',
-    assistiveDevices: 'Walker',
-    mobilityAssistance: '1 Person Assists',
-    sensoryImpairments: 'No hearing issues; no vision issues',
-    specialInstructions: 'No alcohol allowed to this resident.',
-    diagnosis: [
-      { dx: 'HTN – Hypertension', plan: 'Check blood pressure once a day and monitor overall health. Provide medication as prescribed by PCP.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Dementia', plan: 'Administer medication per PCP.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'Kidney Disease', plan: 'Administer meds per PCP. No dialysis at this time. Healthy diet.', freq: 'Daily', by: 'Facility Staff' },
-      { dx: 'History of Alcohol Abuse', plan: 'No alcohol allowed. Monitor behavior. Administer medications as ordered.', freq: 'Daily', by: 'Facility Staff' },
-    ],
-    adl: [
-      { activity: 'Ambulation', help: 'Walker / Supervision', by: 'Facility Staff', when: 'As Needed', comments: 'Resident needs supervision using stair lift and ambulatory equipment' },
-      { activity: 'Bathing', help: 'Provide Assistance', by: 'Facility Staff', when: 'As Needed', comments: '' },
-      { activity: 'Dressing', help: 'Assist with shoes; Independent otherwise', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Toileting', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Eating', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Mobility', help: 'Provide supervision — walker with staff supervision', by: 'Facility Staff', when: 'Every day', comments: 'Resident will use walker with supervision of staff' },
-      { activity: 'Oral Care', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Grooming', help: 'Independent', by: 'Facility Staff', when: 'Every day', comments: '' },
-      { activity: 'Medication', help: 'Total Assist', by: 'Medication Technician', when: 'Every day', comments: 'CMT will administer medication' },
-    ],
-    behavioral: [
-      { activity: 'Vision/Hearing Impairment', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Depression/Withdrawn Behaviors', occurrence: 'Occasional', comments: 'Staff will communicate and assist with activities.', when: 'Weekly', by: 'Facility Staff' },
-      { activity: 'Anxiety', occurrence: 'Never', comments: '', when: '', by: '' },
-      { activity: 'Impaired Recall', occurrence: 'Occasional', comments: 'Staff will assist resident with reminders.', when: 'Daily', by: 'Facility Staff' },
-      { activity: 'Resists Care/Assistance', occurrence: 'Occasional', comments: 'Resident refuses showers. Staff will encourage and help consumer bathe at least 3x weekly.', when: 'Weekly', by: 'Facility Staff' },
-    ],
-    background: 'Has history of on-and-off relationship with spouse. Ambulates with walker but otherwise stable. Identifies as Christian; enjoys watching TV, particularly politics. Engages in conversation about current events.',
-    likes: 'Watching political TV programs. Dislikes being yelled at.',
-    spiritual: 'Christian',
-    routine: 'Wakes in morning, completes personal hygiene with reminders/assistance, attends meals. Spends time resting, watching TV, engaging in light conversation. Staff provide medication reminders and monitor BP.',
-    finances: 'Family/representative manages all financial matters independently.',
-    transportation: 'Needs some assistance/escort',
-    completedDate: '3/10/2026',
-  }
-];
+// SERVICE_PLAN_RESIDENTS is no longer hardcoded — fetched live from the
+// Airtable "Residents" table via /api/residents in loadInitialData(), so
+// edits made directly in Airtable (diagnosis, ADLs, behavioral plans, etc.)
+// show up on the site without a code change. DiagnosisJSON/ADLJSON/
+// BehavioralJSON are parsed from JSON text back into arrays server-side by
+// the residents.js Netlify Function before reaching this array.
+let SERVICE_PLAN_RESIDENTS = [];
 
 function renderServicePlansGrid() {
   const grid = document.getElementById('servicePlansGrid');
@@ -2759,16 +2478,49 @@ function printCalendar() {
 // Historical/seed data no longer needs to be generated client-side — it was
 // migrated once into the Airtable base (MonthlyTaskCompletions, VaccineRecords,
 // CalendarChecks). We just fetch current state and render.
+//
+// The resident roster, staff roster, and 28-item task catalog (formerly the
+// hardcoded SERVICE_PLAN_RESIDENTS / PEOPLE / STAFF / TASKS arrays) are now
+// also fetched live here, from the Airtable "Residents", "Staff", and
+// "TaskCatalog" tables via /api/residents, /api/staff, /api/task-catalog.
+// Editing those tables directly in Airtable is reflected on the site on the
+// next load — there's no separate save step needed for that data.
+function buildPeopleAndStaff(residents, staffRows) {
+  const residentPeople = (residents || []).map(r => ({
+    id: RESIDENT_KEY_TO_PEOPLE_ID[r.id] || r.id,
+    name: r.name,
+    role: 'Resident',
+    type: 'resident',
+    dob: r.dob || '',
+  }));
+  const staffPeople = (staffRows || []).map(s => ({
+    id: s.id,
+    name: s.name,
+    role: s.role,
+    type: 'staff',
+    dob: s.dob || '',
+    fullName: s.fullName,
+  }));
+  return [...residentPeople, ...staffPeople];
+}
+
 async function loadInitialData() {
   try {
-    const [monthlyState, vax, cal] = await Promise.all([
+    const [monthlyState, vax, cal, residents, staffRows, taskCatalog] = await Promise.all([
       apiGet('monthly-tasks'),
       apiGet('vaccine-data'),
       apiGet('calendar-checks'),
+      apiGet('residents'),
+      apiGet('staff'),
+      apiGet('task-catalog'),
     ]);
     state = monthlyState || {};
     vaxCache = vax || { staff: [], residents: [] };
     calCache = cal || {};
+    SERVICE_PLAN_RESIDENTS = residents || [];
+    PEOPLE = buildPeopleAndStaff(residents, staffRows);
+    STAFF = PEOPLE.filter(p => p.type === 'staff');
+    TASKS = taskCatalog || [];
   } catch (err) {
     console.error('Failed to load initial data from Airtable — check AIRTABLE_TOKEN / AIRTABLE_BASE_ID Netlify env vars.', err);
   }
@@ -2776,6 +2528,7 @@ async function loadInitialData() {
   renderChecklist();
   renderFormsGrid();
   renderHome();
+  if (typeof renderServicePlansGrid === 'function') renderServicePlansGrid();
 }
 loadInitialData();
 
